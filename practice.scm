@@ -1,5 +1,5 @@
 (define (print expression) (display expression) (display "\n"))
-(define separator "--------------------------------------------")
+(define separator "-------------------------------------------------")
 (define (header expression) (print expression) (print separator))
 (define (content expression value expected) (display value) (display " | Value : ") (display value) (display " | Expected : ") (display expected) (display "\n"))
 (define (footer) (print separator) (print "\n"))
@@ -272,3 +272,49 @@
             (or (eq? a (car l)) (member* a (cdr l)))
             (or (member* a (car l)) (member* a (cdr l)))))))
 ; (member* 'chips '((potato) (chips ((with) fish) (chips))))
+
+
+;-------------------- Shadows --------------------;
+(define (prefix-operator expression) (car expression))
+(define (prefix-first-operand expression) (car (cdr expression)))
+(define (prefix-second-operand expression) (car (cdr (cdr expression))))
+(define eval-prefix
+  (lambda (expression)
+    (if (number? expression)
+        expression
+        (if (eq? '+ (prefix-operator expression))
+            (+ (eval-prefix (prefix-first-operand expression)) (eval-prefix (prefix-second-operand expression)))
+            (if (eq? '* (prefix-operator expression))
+                (* (eval-prefix (prefix-first-operand expression)) (eval-prefix (prefix-second-operand expression)))
+                (expt (eval-prefix (prefix-first-operand expression)) (eval-prefix (prefix-second-operand expression))))))))
+; (eval-prefix '(+ (* 3 6) (! 8 2)))
+
+
+(define (infix-operator expression) (car (cdr expression)))
+(define (infix-first-operand expression) (car expression))
+(define (infix-second-operand expression) (car (cdr (cdr expression))))
+(define eval-infix
+  (lambda (expression)
+    (if (number? expression)
+        expression
+        (if (eq? '+ (infix-operator expression))
+            (+ (eval-infix (infix-first-operand expression)) (eval-infix (infix-second-operand expression)))
+            (if (eq? '* (infix-operator expression))
+                (* (eval-infix (infix-first-operand expression)) (eval-infix (infix-second-operand expression)))
+                (expt (eval-infix (infix-first-operand expression)) (eval-infix (infix-second-operand expression))))))))
+; (eval-infix '((3 * 6) + (8 ! 2)))
+
+
+(define (postfix-operator expression) (car (cdr (cdr expression))))
+(define (postfix-first-operand expression) (car expression))
+(define (postfix-second-operand expression) (car (cdr expression)))
+(define eval-postfix
+  (lambda (expression)
+    (if (number? expression)
+        expression
+        (if (eq? '+ (postfix-operator expression))
+            (+ (eval-postfix (postfix-first-operand expression)) (eval-postfix (postfix-second-operand expression)))
+            (if (eq? '* (postfix-operator expression))
+                (* (eval-postfix (postfix-first-operand expression)) (eval-postfix (postfix-second-operand expression)))
+                (expt (eval-postfix (postfix-first-operand expression)) (eval-postfix (postfix-second-operand expression))))))))
+; (eval-postfix '((3 6 *) (8 2 !) +))
