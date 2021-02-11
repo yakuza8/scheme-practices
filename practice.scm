@@ -98,3 +98,83 @@
             (cons new (subst new old (cdr lat)))
             (cons (car lat) (subst new old (cdr lat)))))))
 ; (subst 'topping 'fudge '(ice cream with fudge for dessert))
+
+
+; Function returning incremented value of the given parameter
+(define (add1 n) (+ n 1))
+;(add1 5)
+
+
+; Function returning decremented value of the given parameter
+(define (sub1 n) (- n 1))
+;(sub1 5)
+
+
+; Function that takes two tuples of numbers as parameter and sums all the corresponding numbers with the same index
+; Note that if the length of tuples differ then it will evaluate the longest length tuple and zip the shorter one with zero
+(define tup+
+  (lambda (tup1 tup2)
+    (if (and (null? tup1) (null? tup2))
+        (quote())
+        (if (null? tup1)
+            tup2
+            (if (null? tup2)
+                tup1
+                (cons (+ (car tup1) (car tup2)) (tup+ (cdr tup1) (cdr tup2))))))))
+; (tup+ '() '())
+; (tup+ '(1 2 3) '(5 6))
+; (tup+ '(1) '(5 6))
+; (tup+ '(15 73 88) '(5 7 2))
+
+
+; Function returning the length of list
+(define length?
+  (lambda (lat)
+    (if (null? lat) 0 (+ 1 (length? (cdr lat))))))
+; (length? '())
+; (length? '(1 2 3))
+; (length? '(1 (1 2 3 4) 3))
+
+
+; Function returning the value at the given index. Note that index is 1 based
+(define pick
+  (lambda (n lat)
+    (if (zero? (sub1 n))
+        (car lat)
+        (pick (sub1 n) (cdr lat)))))
+; (pick 1 '(2))
+; (pick 1 '(4 5 6 7))
+; (pick 3 '(4 5 6 7))
+
+
+; Function returning a list where the value is removed at index `n`. Note that index is 1 based
+(define rempick
+  (lambda (n lat)
+    (if (zero? (sub1 n))
+        (cdr lat)
+        (cons (car lat) (rempick (sub1 n) (cdr lat))))))
+; (rempick 1 '(2))
+; (rempick 1 '(4 5 6 7))
+; (rempick 3 '(4 5 6 7))
+
+
+; Function returning the list composed of non-number elements of list `lat`
+(define no-nums
+  (lambda (lat)
+    (if (null? lat)
+        (quote())
+        (if (number? (car lat))
+            (no-nums (cdr lat))
+            (cons (car lat) (no-nums (cdr lat)))))))
+; (no-nums '(5 pears 6 prunes 9 dates))
+
+
+; Function returning the list composed of number elements of list `lat`
+(define all-nums
+  (lambda (lat)
+    (if (null? lat)
+        (quote())
+        (if (number? (car lat))
+            (cons (car lat) (all-nums (cdr lat)))
+            (all-nums (cdr lat))))))
+; (all-nums '(5 pears 6 prunes 9 dates))
