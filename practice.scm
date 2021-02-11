@@ -110,6 +110,11 @@
 ;(sub1 5)
 
 
+; Function checking the given number `n` is equal to 1 (one)
+(define (one? n) (zero? (sub1 n)))
+; (one? 2)
+
+
 ; Function that takes two tuples of numbers as parameter and sums all the corresponding numbers with the same index
 ; Note that if the length of tuples differ then it will evaluate the longest length tuple and zip the shorter one with zero
 (define tup+
@@ -150,7 +155,7 @@
 ; Function returning a list where the value is removed at index `n`. Note that index is 1 based
 (define rempick
   (lambda (n lat)
-    (if (zero? (sub1 n))
+    (if (one? n)
         (cdr lat)
         (cons (car lat) (rempick (sub1 n) (cdr lat))))))
 ; (rempick 1 '(2))
@@ -178,3 +183,92 @@
             (cons (car lat) (all-nums (cdr lat)))
             (all-nums (cdr lat))))))
 ; (all-nums '(5 pears 6 prunes 9 dates))
+
+
+; Function returning the number of occurrences of atom `a` inside list `lat`
+(define occur
+  (lambda (a lat)
+    (if (null? lat)
+        0
+        (if (eq? (car lat) a)
+            (add1 (occur a (cdr lat)))
+            (occur a (cdr lat))))))
+; (occur 1 '(1 2 1 4 5 1 4 (1 2 3)))
+
+
+; Function returning a list purified from atom `a` from list `lat`
+(define rember*
+  (lambda (a lat)
+    (if (null? lat)
+        (quote())
+        (if (atom? (car lat))
+            (if (eq? a (car lat))
+                (rember* a (cdr lat))
+                (cons (car lat) (rember* a (cdr lat))))
+            (cons (rember* a (car lat)) (rember* a (cdr lat)))))))
+; (rember* 'cup '((coffee) cup ((tea) cup) (and (hick)) cup))
+; (rember* 'sauce ' (((tomato sauce)) ((bean) sauce) (and ((flying)) sauce)))
+
+
+; Function returning a list where we place parameter `new` nearby right of parameter `old` of list `lat`
+(define insertR*
+  (lambda (new old l)
+    (if (null? l)
+        (quote())
+        (if (atom? (car l))
+            (if (eq? old (car l))
+                (cons old (cons new (insertR* new old (cdr l))))
+                (cons (car l) (insertR* new old (cdr l))))
+            (cons (insertR* new old (car l)) (insertR* new old (cdr l)))))))
+; (insertR* 'roast 'chuck '((how much (wood)) could ((a (wood) chuck)) (((chuck))) (if (a) ((wood chuck))) could chuck wood))
+
+
+; Function returning a list where we place parameter `new` nearby left of parameter `old` of list `lat`
+(define insertL*
+  (lambda (new old l)
+    (if (null? l)
+        (quote())
+        (if (atom? (car l))
+            (if (eq? old (car l))
+                (cons new (cons old (insertL* new old (cdr l))))
+                (cons (car l) (insertL* new old (cdr l))))
+            (cons (insertL* new old (car l)) (insertL* new old (cdr l)))))))
+; (insertL* 'roast 'chuck '((how much (wood)) could ((a (wood) chuck)) (((chuck))) (if (a) ((wood chuck))) could chuck wood))
+
+
+; Function returning the count of atom `a` inside list `l`by searching deeply
+(define occur*
+  (lambda (a l)
+    (if (null? l)
+        0
+        (if (atom? (car l))
+            (if (eq? a (car l))
+                (add1 (occur* a (cdr l)))
+                (occur* a (cdr l)))
+            (+ (occur* a (car l)) (occur* a (cdr l)))))))
+; (occur* 'banana '((banana) (split ((((banana ice))) (cream (banana)) sherbet)) (banana) (bread) (banana brandy)))
+; (occur* 'split '((banana) (split ((((banana ice))) (cream (banana)) sherbet)) (banana) (bread) (banana brandy)))
+
+
+; Function substituting a parameter `new` onto parameter `old` inside list `l` by replacing all of the occurence deeply
+(define subst*
+  (lambda (new old l)
+    (if (null? l)
+        (quote())
+        (if (atom? (car l))
+            (if (eq? old (car l))
+                (cons new (subst* new old (cdr l)))
+                (cons (car l) (subst* new old (cdr l))))
+            (cons (subst* new old (car l)) (subst* new old (cdr l)))))))
+; (subst* 'orange 'banana '((banana) (split ((((banana ice))) (cream (banana)) sherbet)) (banana) (bread) (banana brandy)))
+
+
+; Function returning a parameter `a` found in list `l`by searching deeply
+(define member*
+  (lambda (a l)
+    (if (null? l)
+        #f
+        (if (atom? (car l))
+            (or (eq? a (car l)) (member* a (cdr l)))
+            (or (member* a (car l)) (member* a (cdr l)))))))
+; (member* 'chips '((potato) (chips ((with) fish) (chips))))
