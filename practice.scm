@@ -59,12 +59,12 @@
 
 
 ; Function extracting list of second items of lists inside `lat`
-(define seconds?
+(define seconds
   (lambda (lat)
     (if (null? lat)
         (quote())
-        (cons (second (first lat)) (seconds? (cdr lat))))))
-; (seconds? '((1 2) (3 4) (5 6 7)))
+        (cons (second (first lat)) (seconds (cdr lat))))))
+; (seconds '((1 2) (3 4) (5 6 7)))
 
 
 ; Function returning a list where `new` value is inserted right after the `old` value in the list `lat`
@@ -422,7 +422,7 @@
 
 
 ; Function returning the given relation is one-to-one function
-(define (fullfun? rel) (set? (seconds? rel)))
+(define (fullfun? rel) (set? (seconds rel)))
 ; (fullfun? '((8 3) (4 2) (7 6) (6 2) (3 4)))
 ; (fullfun? '((8 3) (4 8) (7 6) (6 2) (3 4)))
 
