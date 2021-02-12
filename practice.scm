@@ -347,3 +347,89 @@
 ; Function returning whether the given two sets are equal or not
 (define (eqset? set1 set2) (and (subset set1 set2) (subset set2 set1)))
 ; (eqset? '(6 large chickens with wings) '(6 chickens with large wings))
+
+
+; Function returning a whether two sets intersect
+(define intersect?
+  (lambda (set1 set2)
+    (if (null? set1)
+        #f
+        (or (member? (car set1) set2) (intersect? (cdr set1) set2)))))
+; (intersect? '(stewed tomatoes and macaroni) '(macaroni and cheese))
+
+
+; Function returning the intersection set of `set1` and `set2`
+(define intersect
+  (lambda (set1 set2)
+    (if (null? set1)
+        (quote())
+        (if (member? (car set1) set2)
+            (cons (car set1) (intersect (cdr set1) set2))
+            (intersect (cdr set1) set2)))))
+; (intersect '(stewed tomatoes and macaroni) '(macaroni and cheese))
+; (intersect '(stewed tomatoes and macaroni) '())
+
+; Function returning the union of `set1` and `set2`
+(define union
+  (lambda (set1 set2)
+    (if (null? set1)
+        set2
+        (if (member? (car set1) set2)
+            (union (cdr set1) set2)
+            (cons (car set1) (union (cdr set1) set2))))))
+; (union '(stewed tomatoes and macaroni casserole) '(macaroni and cheese))
+
+
+; Function returning the intersection of all the sets inside the given list of sets
+(define intersectall
+  (lambda (l-set)
+    (if (null? (cdr l-set))
+        (car l-set)
+        (intersect (car l-set) (intersectall (cdr l-set))))))
+; (intersectall '((a b c) (c a d e) (e f g h a b)))
+; (intersectall '((6 pears and) (3 peaches and 6 peppers) (8 pears and 6 plums) (and 6 prunes with some apples)))
+
+
+; Function returning whether the given tuple represents the pair
+(define (pair? x) (and (not (atom? x)) (eq? 2 (length x))))
+; (pair? '())
+; (pair? '(1))
+; (pair? '(1 2))
+; (pair? '(1 2 3))
+; (pair? 1)
+
+
+; Function returning the pair built from parameter `s1` and `s2`
+(define (build s1 s2) (cons s1 (cons s2 (quote()))))
+; (build 1 2)
+
+
+; Function returning whether the given relation represents a function
+(define (fun? rel) (set? (firsts? rel)))
+; (fun? '((4 3) (4 2) (7 6) (6 2) (3 4)))
+; (fun? '((8 3) (4 2) (7 6) (6 2) (3 4)))
+; (fun? '((d 4) (b 0) (b 9) (e 5) (g 4)))
+
+
+; Function returning the reversed of the given relation
+(define revrel
+  (lambda (rel)
+    (if (null? rel)
+        (quote())
+        (cons (build (second? (first? rel)) (first? (first? rel))) (revrel (cdr rel))))))
+; (revrel '((8 3) (4 2) (7 6) (6 2) (3 4)))
+
+
+
+; Function returning the given relation is one-to-one function
+(define (fullfun? rel) (set? (seconds? rel)))
+; (fullfun? '((8 3) (4 2) (7 6) (6 2) (3 4)))
+; (fullfun? '((8 3) (4 8) (7 6) (6 2) (3 4)))
+
+
+; Function returning the given relation is one-to-one function
+(define (one-to-one? rel) (fun? (revrel rel)))
+; (one-to-one? '((8 3) (4 2) (7 6) (6 2) (3 4)))
+; (one-to-one? '((8 3) (4 8) (7 6) (6 2) (3 4)))
+; (one-to-one? '((grape raisin) (plum prune) (stewed prune)))
+; (one-to-one? '((grape raisin) (plum prune) (stewed grape)))
