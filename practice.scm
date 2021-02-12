@@ -285,7 +285,7 @@
                 (* (eval-expression first-operand-process second-operand-process operator-process (first-operand-process expression)) (eval-expression first-operand-process second-operand-process operator-process (second-operand-process expression)))
                 (expt (eval-expression first-operand-process second-operand-process operator-process (first-operand-process expression)) (eval-expression first-operand-process second-operand-process operator-process (second-operand-process expression))))))))
 
-
+; Prefix operator operand1 and operand2 definition with prefix evaluation of expression
 (define (prefix-operator expression) (car expression))
 (define (prefix-first-operand expression) (car (cdr expression)))
 (define (prefix-second-operand expression) (car (cdr (cdr expression))))
@@ -293,6 +293,7 @@
 ; (eval-prefix '(+ (* 3 6) (! 8 2)))
 
 
+; Infix operator operand1 and operand2 definition with infix evaluation of expression
 (define (infix-operator expression) (car (cdr expression)))
 (define (infix-first-operand expression) (car expression))
 (define (infix-second-operand expression) (car (cdr (cdr expression))))
@@ -300,8 +301,49 @@
 ; (eval-infix '((3 * 6) + (8 ! 2)))
 
 
+; Postfix operator operand1 and operand2 definition with postfix evaluation of expression
 (define (postfix-operator expression) (car (cdr (cdr expression))))
 (define (postfix-first-operand expression) (car expression))
 (define (postfix-second-operand expression) (car (cdr expression)))
 (define (eval-postfix expression) (eval-expression postfix-first-operand postfix-second-operand postfix-operator expression))
 ; (eval-postfix '((3 6 *) (8 2 !) +))
+
+
+;--------------- Friends and Relations ---------------;
+; Function returning whether the given list holds being set properties i.e. each element occurs once in the list
+(define set?
+  (lambda (lat)
+    (if (null? lat)
+        #t
+        (and (not (member? (car lat) (cdr lat))) (set? (cdr lat))))))
+; (set? '())
+; (set? '(apple peaches apple plum))
+; (set? '(apples peaches pears plums))
+; (set? '(apple 3 pear 4 9 apple 3 4))
+
+
+; Function returning set from a list in the given order of elements
+(define makeset
+  (lambda (lat)
+    (if (null? lat)
+        (quote())
+        (if (member? (car lat) (cdr lat))
+            (cons (car lat) (rember? (car lat) (makeset (cdr lat))))
+            (cons (car lat) (makeset (cdr lat)))))))
+; (makeset '(apple peach pear peach plum apple lemon peach))
+; (makeset '(apple 3 pear 4 9 apple 3 4))
+
+
+; Function returning boolean parameter representing the given `set1` is subset of `set2`
+(define subset
+  (lambda (set1 set2)
+    (if (null? set1)
+        #t
+        (and (member? (car set1) set2) (subset (cdr set1) set2)))))
+; (subset '(5 chicken wings) '(5 hamburgers 2 pieces fried chicken and light duckling wings))
+; (subset '(4 pounds of horseradish) '(four pounds chicken and 5 ounces horseradish))
+
+
+; Function returning whether the given two sets are equal or not
+(define (eqset? set1 set2) (and (subset set1 set2) (subset set2 set1)))
+; (eqset? '(6 large chickens with wings) '(6 chickens with large wings))
