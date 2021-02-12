@@ -26,36 +26,36 @@
 
 
 ; Function returning a new list where parameter `a` vanished from list `lat`
-(define rember?
+(define rember
   (lambda (a lat)
     (if (null? lat)
         (quote())
         (if (eq? (car lat) a)
-            (rember? a (cdr lat))
-            (cons (car lat) (rember? a (cdr lat)))))))
-; (rember? 4 '(4 5 4 (5 4)))
-; (rember? 'sauce '(soy sauce and tomato sauce))
+            (rember a (cdr lat))
+            (cons (car lat) (rember a (cdr lat)))))))
+; (rember 4 '(4 5 4 (5 4)))
+; (rember 'sauce '(soy sauce and tomato sauce))
 
 
 ; Function returning first item in the given list `lat`
-(define first?
+(define first
   (lambda (lat) (car lat)))
-; (first? '(1 2 3))
+; (first '(1 2 3))
 
 
 ; Function returning second item in the given list `lat`
-(define second?
+(define second
   (lambda (lat) (car (cdr lat))))
-; (second? '(1 2 3))
+; (second '(1 2 3))
 
 
 ; Function extracting list of first items of lists inside `lat`
-(define firsts?
+(define firsts
   (lambda (lat)
     (if (null? lat)
         (quote())
-        (cons (first? (first? lat)) (firsts? (cdr lat))))))
-; (firsts? '((1 2) (3 4) (5 6 7)))
+        (cons (first (first lat)) (firsts (cdr lat))))))
+; (firsts '((1 2) (3 4) (5 6 7)))
 
 
 ; Function extracting list of second items of lists inside `lat`
@@ -63,7 +63,7 @@
   (lambda (lat)
     (if (null? lat)
         (quote())
-        (cons (second? (first? lat)) (seconds? (cdr lat))))))
+        (cons (second (first lat)) (seconds? (cdr lat))))))
 ; (seconds? '((1 2) (3 4) (5 6 7)))
 
 
@@ -328,7 +328,7 @@
     (if (null? lat)
         (quote())
         (if (member? (car lat) (cdr lat))
-            (cons (car lat) (rember? (car lat) (makeset (cdr lat))))
+            (cons (car lat) (rember (car lat) (makeset (cdr lat))))
             (cons (car lat) (makeset (cdr lat)))))))
 ; (makeset '(apple peach pear peach plum apple lemon peach))
 ; (makeset '(apple 3 pear 4 9 apple 3 4))
@@ -405,7 +405,7 @@
 
 
 ; Function returning whether the given relation represents a function
-(define (fun? rel) (set? (firsts? rel)))
+(define (fun? rel) (set? (firsts rel)))
 ; (fun? '((4 3) (4 2) (7 6) (6 2) (3 4)))
 ; (fun? '((8 3) (4 2) (7 6) (6 2) (3 4)))
 ; (fun? '((d 4) (b 0) (b 9) (e 5) (g 4)))
@@ -416,7 +416,7 @@
   (lambda (rel)
     (if (null? rel)
         (quote())
-        (cons (build (second? (first? rel)) (first? (first? rel))) (revrel (cdr rel))))))
+        (cons (build (second (first rel)) (first (first rel))) (revrel (cdr rel))))))
 ; (revrel '((8 3) (4 2) (7 6) (6 2) (3 4)))
 
 
