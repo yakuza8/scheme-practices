@@ -275,46 +275,33 @@
 
 
 ;-------------------- Shadows --------------------;
+(define eval-expression
+  (lambda (first-operand-process second-operand-process operator-process expression)
+    (if (number? expression)
+        expression
+        (if (eq? '+ (operator-process expression))
+            (+ (eval-expression first-operand-process second-operand-process operator-process (first-operand-process expression)) (eval-expression first-operand-process second-operand-process operator-process (second-operand-process expression)))
+            (if (eq? '* (operator-process expression))
+                (* (eval-expression first-operand-process second-operand-process operator-process (first-operand-process expression)) (eval-expression first-operand-process second-operand-process operator-process (second-operand-process expression)))
+                (expt (eval-expression first-operand-process second-operand-process operator-process (first-operand-process expression)) (eval-expression first-operand-process second-operand-process operator-process (second-operand-process expression))))))))
+
+
 (define (prefix-operator expression) (car expression))
 (define (prefix-first-operand expression) (car (cdr expression)))
 (define (prefix-second-operand expression) (car (cdr (cdr expression))))
-(define eval-prefix
-  (lambda (expression)
-    (if (number? expression)
-        expression
-        (if (eq? '+ (prefix-operator expression))
-            (+ (eval-prefix (prefix-first-operand expression)) (eval-prefix (prefix-second-operand expression)))
-            (if (eq? '* (prefix-operator expression))
-                (* (eval-prefix (prefix-first-operand expression)) (eval-prefix (prefix-second-operand expression)))
-                (expt (eval-prefix (prefix-first-operand expression)) (eval-prefix (prefix-second-operand expression))))))))
+(define (eval-prefix expression) (eval-expression prefix-first-operand prefix-second-operand prefix-operator expression))
 ; (eval-prefix '(+ (* 3 6) (! 8 2)))
 
 
 (define (infix-operator expression) (car (cdr expression)))
 (define (infix-first-operand expression) (car expression))
 (define (infix-second-operand expression) (car (cdr (cdr expression))))
-(define eval-infix
-  (lambda (expression)
-    (if (number? expression)
-        expression
-        (if (eq? '+ (infix-operator expression))
-            (+ (eval-infix (infix-first-operand expression)) (eval-infix (infix-second-operand expression)))
-            (if (eq? '* (infix-operator expression))
-                (* (eval-infix (infix-first-operand expression)) (eval-infix (infix-second-operand expression)))
-                (expt (eval-infix (infix-first-operand expression)) (eval-infix (infix-second-operand expression))))))))
+(define (eval-infix expression) (eval-expression infix-first-operand infix-second-operand infix-operator expression))
 ; (eval-infix '((3 * 6) + (8 ! 2)))
 
 
 (define (postfix-operator expression) (car (cdr (cdr expression))))
 (define (postfix-first-operand expression) (car expression))
 (define (postfix-second-operand expression) (car (cdr expression)))
-(define eval-postfix
-  (lambda (expression)
-    (if (number? expression)
-        expression
-        (if (eq? '+ (postfix-operator expression))
-            (+ (eval-postfix (postfix-first-operand expression)) (eval-postfix (postfix-second-operand expression)))
-            (if (eq? '* (postfix-operator expression))
-                (* (eval-postfix (postfix-first-operand expression)) (eval-postfix (postfix-second-operand expression)))
-                (expt (eval-postfix (postfix-first-operand expression)) (eval-postfix (postfix-second-operand expression))))))))
+(define (eval-postfix expression) (eval-expression postfix-first-operand postfix-second-operand postfix-operator expression))
 ; (eval-postfix '((3 6 *) (8 2 !) +))
