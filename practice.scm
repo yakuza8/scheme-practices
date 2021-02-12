@@ -102,12 +102,12 @@
 
 ; Function returning incremented value of the given parameter
 (define (add1 n) (+ n 1))
-;(add1 5)
+; (add1 5)
 
 
 ; Function returning decremented value of the given parameter
 (define (sub1 n) (- n 1))
-;(sub1 5)
+; (sub1 5)
 
 
 ; Function checking the given number `n` is equal to 1 (one)
@@ -133,12 +133,12 @@
 
 
 ; Function returning the length of list
-(define length?
+(define length
   (lambda (lat)
-    (if (null? lat) 0 (+ 1 (length? (cdr lat))))))
-; (length? '())
-; (length? '(1 2 3))
-; (length? '(1 (1 2 3 4) 3))
+    (if (null? lat) 0 (+ 1 (length (cdr lat))))))
+; (length '())
+; (length '(1 2 3))
+; (length '(1 (1 2 3 4) 3))
 
 
 ; Function returning the value at the given index. Note that index is 1 based
